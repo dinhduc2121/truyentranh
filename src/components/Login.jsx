@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../../config";
 
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState("");
@@ -14,7 +15,7 @@ const Login = ({ onLogin }) => {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:3001/api/login", {
+      const res = await fetch(`${API_BASE_URL}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })
@@ -34,7 +35,7 @@ const Login = ({ onLogin }) => {
         onLogin(user);
         localStorage.setItem("user", JSON.stringify(user));
 
-        navigate("/"); // Chuyển về trang chủ hoặc trang bạn muốn
+        navigate("/home");
       } else {
         setError(data.message || "Đăng nhập thất bại");
       }
