@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../../config";
 
 // Mobile menu component
 function MobileMenu({ open, onClose, categories, user, onLogout, historyComics, readingHistory }) {
@@ -137,14 +138,15 @@ const Navbar = ({ user, onLogout }) => {
   }, []);
 
   // Lấy lịch sử đọc nếu đã đăng nhập
-  useEffect(() => {
-    if (!user?.token) return;
-    fetch("http://localhost:3001/api/user/history", {
-      headers: { Authorization: `Bearer ${user.token}` }
-    })
-      .then(res => res.json())
-      .then(data => setReadingHistory(data.readingHistory || []));
-  }, [user]);
+    useEffect(() => {
+      if (!user?.token) return;
+      fetch(`${API_BASE_URL}/api/user/history`, {
+        headers: { Authorization: `Bearer ${user.token}` }
+      })
+        .then(res => res.json())
+        .then(data => setReadingHistory(data.readingHistory || []));
+    }, [user]);
+
 
   // Lấy thông tin truyện cho từng lịch sử đọc (chỉ lấy tên và ảnh)
   useEffect(() => {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../../config";
 
 const Profile = ({ user, onLogout }) => {
   const [profile, setProfile] = useState(null);
@@ -21,9 +22,10 @@ const Profile = ({ user, onLogout }) => {
   // Lấy thông tin tài khoản
   useEffect(() => {
     if (!user?.token) return;
-    fetch("http://localhost:3001/api/user/profile", {
-      headers: { Authorization: `Bearer ${user.token}` }
-    })
+      fetch(`${API_BASE_URL}/api/user/profile`, {
+        headers: { Authorization: `Bearer ${user.token}` }
+      })
+
       .then(res => res.json())
       .then(data => {
         setProfile(data);
@@ -38,9 +40,10 @@ const Profile = ({ user, onLogout }) => {
   // Lấy truyện đã theo dõi (lấy thêm thông tin truyện)
   useEffect(() => {
     if (!user?.token) return;
-    fetch("http://localhost:3001/api/user/followed", {
-      headers: { Authorization: `Bearer ${user.token}` }
-    })
+        fetch(`${API_BASE_URL}/api/user/followed`, {
+          headers: { Authorization: `Bearer ${user.token}` }
+        })
+
       .then(res => res.json())
       .then(async data => {
         const slugs = data.followedComics || [];
@@ -74,9 +77,10 @@ const Profile = ({ user, onLogout }) => {
   // Lấy lịch sử đọc (lấy thêm thông tin truyện)
   useEffect(() => {
     if (!user?.token) return;
-    fetch("http://localhost:3001/api/user/history", {
-      headers: { Authorization: `Bearer ${user.token}` }
-    })
+        fetch(`${API_BASE_URL}/api/user/history`, {
+          headers: { Authorization: `Bearer ${user.token}` }
+        })
+
       .then(res => res.json())
       .then(async data => {
         const historyArr = data.readingHistory || [];

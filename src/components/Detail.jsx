@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { API_BASE_URL } from "../../config";
 
 const Detail = ({ user }) => {
   const { slug } = useParams();
@@ -28,7 +29,7 @@ const Detail = ({ user }) => {
 
   useEffect(() => {
     if (!user?.token) return;
-    fetch("http://localhost:3001/api/user/history", {
+    fetch(`${API_BASE_URL}/api/user/history`, {
       headers: { Authorization: `Bearer ${user.token}` }
     })
       .then(res => res.json())
@@ -58,7 +59,7 @@ const Detail = ({ user }) => {
   // Kiểm tra đã theo dõi truyện chưa
   useEffect(() => {
     if (!user?.token || !slug) return setIsFollowing(false);
-    fetch(`http://localhost:3001/api/user/is-following/${slug}`, {
+    fetch(`${API_BASE_URL}/api/user/is-following/${slug}`, {
       headers: { Authorization: `Bearer ${user.token}` }
     })
       .then(res => res.json())
@@ -71,8 +72,8 @@ const Detail = ({ user }) => {
     if (!user?.token) return;
     setFollowLoading(true);
     const url = isFollowing
-      ? "http://localhost:3001/api/user/unfollow"
-      : "http://localhost:3001/api/user/follow";
+  ? `${API_BASE_URL}/api/user/unfollow`
+  : `${API_BASE_URL}/api/user/follow`;
     await fetch(url, {
       method: "POST",
       headers: {
