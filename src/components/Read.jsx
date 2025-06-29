@@ -159,7 +159,7 @@ const Read = ({ user }) => {
   // Kiểm tra trạng thái theo dõi
   useEffect(() => {
     if (!user?.token) return;
-    fetch(`${API_BASE}/api/user/is-following/${slug}`, {
+    fetch(`${API_BASE_URL}/api/user/is-following/${slug}`, {
       headers: { Authorization: `Bearer ${user.token}` },
     })
       .then(res => res.json())
@@ -175,7 +175,7 @@ const Read = ({ user }) => {
     try {
       const endpoint = isFollowing ? "/unfollow" : "/follow";
       await axios.post(
-        `${API_BASE}/api/user${endpoint}`,
+        `${API_BASE_URL}/api/user${endpoint}`,
         { slug },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
@@ -200,7 +200,7 @@ const Read = ({ user }) => {
   // Lưu lịch sử đọc
   useEffect(() => {
     if (!user?.token || !slug || !chapter) return;
-    fetch(`${API_BASE}/api/user/history`, {
+    fetch(`${API_BASE_URL}/api/user/history`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -208,7 +208,7 @@ const Read = ({ user }) => {
       },
       body: JSON.stringify({ slug, chapter })
     }).then(() => {
-      fetch(`${API_BASE}/api/user/history`, {
+      fetch(`${API_BASE_URL}/api/user/history`, {
         headers: { Authorization: `Bearer ${user.token}` }
       })
         .then(res => res.json())
