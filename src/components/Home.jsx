@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import TopRanking from "./TopRanking";
+import { API_BASE_URL } from "../../config";
 
 const Home = ({ selectedCategory, categories = [], onSelectCategory, user }) => {
   const [comics, setComics] = useState([]);

@@ -1,4 +1,5 @@
 import React from "react";
+import { API_BASE_URL } from "../../config";
 
 const Footer = () => (
   <footer className="mt-10 py-6 bg-[#44346a] text-white text-center rounded shadow">
