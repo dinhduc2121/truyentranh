@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { API_BASE_URL } from "../config";
 
-
 const Register = ({ onRegister }) => {
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState(""); // Thêm email
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
@@ -16,10 +15,14 @@ const Register = ({ onRegister }) => {
     setError("");
     setSuccess("");
 
+    console.log("BẮT ĐẦU SUBMIT FORM");
+    console.log("API_BASE_URL:", API_BASE_URL);
+
     if (password !== confirm) {
       setError("Mật khẩu nhập lại không khớp");
       return;
     }
+
     if (!email.trim()) {
       setError("Vui lòng nhập email");
       return;
@@ -34,12 +37,17 @@ const Register = ({ onRegister }) => {
           username,
           email,
           password,
-          // Nếu bạn muốn, có thể thêm tuVi hoặc role:
-          // tuVi: "Phàm Nhân",
-          // role: "member"
+          tuVi: "Phàm Nhân",   // giá trị mặc định
+          role: "member"       // giá trị mặc định
         }),
       });
+
+      console.log("Response raw:", res);
+
       const data = await res.json();
+
+      console.log("Response JSON:", data);
+
       if (data.success) {
         setSuccess("Đăng ký thành công! Bạn có thể đăng nhập.");
         setUsername("");
@@ -50,6 +58,7 @@ const Register = ({ onRegister }) => {
         setError(data.message || "Đăng ký thất bại");
       }
     } catch (err) {
+      console.error("Lỗi fetch:", err);
       setError("Lỗi kết nối server");
     }
     setLoading(false);
@@ -62,6 +71,7 @@ const Register = ({ onRegister }) => {
         className="bg-white text-black p-6 rounded shadow w-full max-w-xs"
       >
         <h2 className="text-xl font-bold mb-4 text-center">Đăng ký tài khoản</h2>
+
         {error && <div className="text-red-500 mb-2 text-sm">{error}</div>}
         {success && <div className="text-green-600 mb-2 text-sm">{success}</div>}
 
