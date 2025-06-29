@@ -327,25 +327,26 @@ const Read = ({ user }) => {
 
         {/* Thanh điều hướng sticky */}
         {showStickyNav && (
-          <ChapterNav
-            slug={slug}
-            allChapters={allChapters}
-            currentChapterIdx={currentChapterIdx}
-            prevIdx={prevIdx}
-            nextIdx={nextIdx}
-            goToChapter={goToChapter}
-            showChapterList={showChapterList}
-            setShowChapterList={setShowChapterList}
-            renderChapterList={renderChapterList}
-            isFollowing={isFollowing}
-            toggleFollow={toggleFollow}
-            className="fixed top-0 left-1/2 -translate-x-1/2 z-50"
-            style={{ minWidth: 320 }}
-          />
-        )}
+  <ChapterNav
+    slug={slug}
+    allChapters={allChapters}
+    currentChapterIdx={currentChapterIdx}
+    prevIdx={prevIdx}
+    nextIdx={nextIdx}
+    goToChapter={goToChapter}
+    showChapterList={showChapterList}
+    setShowChapterList={setShowChapterList}
+    renderChapterList={renderChapterList}
+    isFollowing={isFollowing}
+    toggleFollow={toggleFollow}
+    className="fixed top-16 left-1/2 -translate-x-1/2 z-40"
+    style={{ minWidth: 320 }}
+  />
+)}
+
 
         {/* Nội dung chương */}
-        <div style={{ paddingTop: showStickyNav ? "60px" : 0 }}>
+        <div style={{ paddingTop: showStickyNav ? "10px" : 0 }}>
           <div className="flex flex-col gap-4 items-center">
             {imgLoading ? (
               <div className="text-gray-500 py-8 text-lg">Đang tải ảnh chương...</div>
