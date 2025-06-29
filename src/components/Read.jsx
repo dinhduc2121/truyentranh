@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import CommentSection from "./CommentSection";
-import { API_BASE } from "../../config";
+import { API_BASE_URL } from "../../config";
 
 const ChapterNav = ({
   slug,
