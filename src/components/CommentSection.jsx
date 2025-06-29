@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+
 const CommentSection = ({ comicSlug, user }) => {
   const [comments, setComments] = useState([]);
   const [content, setContent] = useState('');

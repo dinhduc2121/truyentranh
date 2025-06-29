@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import CommentSection from "./CommentSection";
-import { Link } from "react-router-dom";
 
 const ChapterNav = ({
   slug,
