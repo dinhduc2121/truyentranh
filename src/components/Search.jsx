@@ -26,7 +26,7 @@ const Search = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Kết quả tìm kiếm cho: <span className="text-yellow-300">{query}</span></h2>
+      <h2 className="text-xl text-black font-bold mb-4">Kết quả tìm kiếm cho: <span className="text-red-600">{query}</span></h2>
       {loading && <div>Đang tìm kiếm...</div>}
       {error && <div className="text-red-500">{error}</div>}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">

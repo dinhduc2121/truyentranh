@@ -159,12 +159,12 @@ const Home = ({ user }) => {
                 </span>
                 <span className="text-gray-700">Truyện mới nhất</span>
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-4 gap-6">
                 {comics.map((item) => (
                   <Link
                     key={item._id}
                     to={`/truyen/${item.slug}`}
-                    className="bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow"
+                    className="bg-white text-black rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow"
                   >
                     <img
                       src={
@@ -192,18 +192,6 @@ const Home = ({ user }) => {
                 onPageChange={goToPage}
               />
             </section>
-
-            {/* Bình luận trang chủ */}
-            <section className="mb-12 bg-white rounded-xl shadow-lg p-6">
-              <h2 className="text-2xl font-bold mb-6 text-purple-700 border-b-2 border-pink-200 pb-2">
-                Bình luận trang chủ
-              </h2>
-              <HomeComments
-                comments={homeComments}
-                onAddComment={handleAddComment}
-                user={user}
-              />
-            </section>
           </div>
 
           {/* Sidebar */}
@@ -214,87 +202,104 @@ const Home = ({ user }) => {
                 </span>
                 <span className="text-gray-700">Truyện của bạn</span>
               </h2>
-            <div className="flex mb-6">
-              {/* Lịch sử đọc */}
-              <div className="w-1/2 pr-2">
-                <div className="bg-white rounded-lg shadow p-4 h-full">
-                  <h3 className="font-bold text-lg mb-3 text-purple-700">
-                    Lịch sử đọc
-                  </h3>
-                  {readingHistory.length === 0 ? (
-                    <div className="text-xs text-gray-500">
-                      Bạn chưa đọc truyện nào.
-                    </div>
-                  ) : (
-                    <div className="space-y-2 text-xs text-gray-700">
-                      {[...new Set(readingHistory.map((h) => h.slug))]
-                        .slice(0, 5)
-                        .map((slug) => {
-                          const comic = historyComics[slug];
-                          return (
-                            <Link
-                              key={slug}
-                              to={`/truyen/${slug}`}
-                              className="flex items-center gap-2 hover:bg-purple-50 p-2 rounded"
-                            >
-                              <img
-                                src={
-                                  comic?.thumb_url
-                                    ? `${cdnDomain}/uploads/comics/${comic.thumb_url}`
-                                    : "/default-avatar.png"
-                                }
-                                alt={comic?.name}
-                                className="w-8 h-12 object-cover rounded border"
-                              />
-                              <span className="text-sm truncate">
-                                {comic?.name || slug}
-                              </span>
-                            </Link>
-                          );
-                        })}
-                    </div>
-                  )}
+              <div className="flex mb-6">
+                {/* Lịch sử đọc */}
+                <div className="w-1/2 pr-2">
+                  <div className="bg-white rounded-lg shadow p-4 h-full">
+                    <h3 className="font-bold text-lg mb-3 text-purple-700">
+                      Lịch sử đọc
+                    </h3>
+                    {readingHistory.length === 0 ? (
+                      <div className="text-xs text-gray-500">
+                        Bạn chưa đọc truyện nào.
+                      </div>
+                    ) : (
+                      <div className="space-y-2 text-xs text-gray-700">
+                        {[...new Set(readingHistory.map((h) => h.slug))]
+                          .slice(0, 5)
+                          .map((slug) => {
+                            const comic = historyComics[slug];
+                            return (
+                              <Link
+                                key={slug}
+                                to={`/truyen/${slug}`}
+                                className="flex items-center gap-2 hover:bg-purple-50 p-2 rounded"
+                              >
+                                <img
+                                  src={
+                                    comic?.thumb_url
+                                      ? `${cdnDomain}/uploads/comics/${comic.thumb_url}`
+                                      : "/default-avatar.png"
+                                  }
+                                  alt={comic?.name}
+                                  className="w-8 h-12 object-cover rounded border"
+                                />
+                                <span className="text-sm truncate">
+                                  {comic?.name || slug}
+                                </span>
+                              </Link>
+                            );
+                          })}
+                        {readingHistory.length > 5 && (
+                          <Link
+                            to="/profile"
+                            className="block mt-2 text-xs font-semibold text-center text-purple-600 hover:underline"
+                          >
+                            Xem thêm...
+                          </Link>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Truyện theo dõi */}
+                <div className="w-1/2 pl-2">
+                  <div className="bg-white rounded-lg shadow p-4 h-full">
+                    <h3 className="font-bold text-lg mb-3 text-blue-700">
+                      Truyện theo dõi
+                    </h3>
+                    {followedComics.length === 0 ? (
+                      <p className="text-xs text-gray-500">
+                        Bạn chưa theo dõi truyện nào.
+                      </p>
+                    ) : (
+                      <div className="space-y-2 text-xs text-gray-700">
+                        {followedComics.slice(0, 5).map((comic) => (
+                          <Link
+                            key={comic.slug}
+                            to={`/truyen/${comic.slug}`}
+                            className="flex items-center gap-2 hover:bg-blue-50 p-2 rounded"
+                          >
+                            <img
+                              src={comic.thumb_url}
+                              alt={comic.name}
+                              className="w-8 h-12 object-cover rounded border"
+                            />
+                            <div className="flex-1 truncate">
+                              <div className="font-medium text-sm truncate">
+                                {comic.name}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                Chapter {comic.chap || "?"}
+                              </div>
+                            </div>
+                          </Link>
+                        ))}
+                        {followedComics.length > 5 && (
+                          <Link
+                            to="/profile"
+                            className="block mt-2 text-xs font-semibold text-center text-purple-600 hover:underline"
+                          >
+                            Xem thêm...
+                          </Link>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* Truyện theo dõi */}
-              <div className="w-1/2 pl-2">
-                <div className="bg-white rounded-lg shadow p-4 h-full">
-                  <h3 className="font-bold text-lg mb-3 text-blue-700">
-                    Truyện theo dõi
-                  </h3>
-                  {followedComics.length === 0 ? (
-                    <p className="text-xs text-gray-500">
-                      Bạn chưa theo dõi truyện nào.
-                    </p>
-                  ) : (
-                    <div className="space-y-2 text-xs text-gray-700">
-                      {followedComics.slice(0, 5).map((comic) => (
-                        <Link
-                          key={comic.slug}
-                          to={`/truyen/${comic.slug}`}
-                          className="flex items-center gap-2 hover:bg-blue-50 p-2 rounded"
-                        >
-                          <img
-                            src={comic.thumb_url}
-                            alt={comic.name}
-                            className="w-8 h-12 object-cover rounded border"
-                          />
-                          <div className="flex-1 truncate">
-                            <div className="font-medium text-sm truncate">
-                              {comic.name}
-                            </div>
-                            <div className="text-xs text-gray-500">
-                              Chapter {comic.chap || "?"}
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
 
             {/* Top Ranking */}
             <div className="w-full mb-6">
@@ -307,6 +312,17 @@ const Home = ({ user }) => {
             </div>
           </div>
         </div>
+        {/* Bình luận trang chủ */}
+            <section className="mb-12 bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-2xl font-bold mb-6 text-purple-700 border-b-2 border-pink-200 pb-2">
+                Bình luận trang chủ
+              </h2>
+              <HomeComments
+                comments={homeComments}
+                onAddComment={handleAddComment}
+                user={user}
+              />
+            </section>
       </div>
     </div>
   );

@@ -37,7 +37,7 @@ const CalendarWidget = () => {
       <section className="bg-white rounded-xl shadow-lg p-6">
         {/* Tiêu đề */}
         <h3 className="font-bold text-lg mb-4 text-purple-700 border-b-2 border-pink-200 pb-2">
-          📅 Lịch Hôm Nay
+          📅 Thời gian + Thông báo Từ Đại Đạo
         </h3>
 
         {/* Ngày giờ hiện tại */}
