@@ -1,8 +1,9 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import ChapterNav from "./ChapterNav";
 import ChapterList from "./ChapterList";
 import ChapterImages from "./ChapterImages";
+import RaiTing from "../RaiTing";
 import CommentSection from "../CommentSection";
 import { useFollowStatus } from "./hooks/useFollowStatus";
 import { useChapterData } from "./hooks/useChapterData";
@@ -12,9 +13,10 @@ import { useFollowedComics } from "./hooks/useFollowedComics";
 const Read = ({ user }) => {
   const { slug, chapter } = useParams();
   const navigate = useNavigate();
+  const [showSidebar, setShowSidebar] = useState(false);
   const [showChapterList, setShowChapterList] = useState(false);
   const chapterListRef = useRef(null);
-  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [historyComics, setHistoryComics] = useState({});
 
   const {
     comicName,
@@ -27,8 +29,32 @@ const Read = ({ user }) => {
   } = useChapterData(slug, chapter);
 
   const { isFollowing, toggleFollow } = useFollowStatus({ user, slug });
-  const { readingHistory, isChapterRead } = useReadingHistory({ user, slug, chapter });
+  const { readingHistory } = useReadingHistory({ user, slug, chapter });
   const { followedComics, loading: followLoading, error: followError } = useFollowedComics({ user });
+
+  const cdnDomain = "https://img.otruyenapi.com";
+
+  useEffect(() => {
+    if (!user?.token || !readingHistory.length) return;
+    const uniqueSlugs = [...new Set(readingHistory.map((h) => h.slug))];
+    Promise.all(
+      uniqueSlugs.map((slug) =>
+        fetch(`https://otruyenapi.com/v1/api/truyen-tranh/${slug}`)
+          .then((res) => res.json())
+          .then((data) => ({
+            slug,
+            name: data.data?.item?.name || slug,
+            thumb_url: data.data?.item?.thumb_url || "",
+          }))
+      )
+    ).then((arr) => {
+      const obj = {};
+      arr.forEach((item) => {
+        obj[item.slug] = item;
+      });
+      setHistoryComics(obj);
+    });
+  }, [user, readingHistory]);
 
   const goToChapter = (idx) => {
     if (idx >= 0 && idx < allChapters.length) {
@@ -38,202 +64,198 @@ const Read = ({ user }) => {
     }
   };
 
-  const renderChapterList = () => (
-    <ChapterList
-      ref={chapterListRef}
-      allChapters={allChapters}
-      currentChapterIdx={currentChapterIdx}
-      goToChapter={goToChapter}
-      isChapterRead={isChapterRead}
-      slug={slug}
-      user={user}
-    />
-  );
-
   const prevIdx = currentChapterIdx + 1 < allChapters.length ? currentChapterIdx + 1 : -1;
   const nextIdx = currentChapterIdx - 1 >= 0 ? currentChapterIdx - 1 : -1;
 
-  useEffect(() => {
-    if (!showChapterList) return;
-    const handleClick = (e) => {
-      if (chapterListRef.current && !chapterListRef.current.contains(e.target)) {
-        setShowChapterList(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [showChapterList]);
-
-  useEffect(() => {
-    const container = document.querySelector(".reader-container");
-    if (!container) return;
-
-    const handleScroll = () => {
-      setShowScrollTop(container.scrollTop > 200);
-    };
-
-    container.addEventListener("scroll", handleScroll, { passive: true });
-    return () => container.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const historyList = Array.isArray(readingHistory) ? readingHistory.slice(0, 2) : [];
-  const hasMoreHistory = Array.isArray(readingHistory) && readingHistory.length > 2;
-
   return (
-    <div className="flex min-h-screen bg-white text-black">
-      {/* Reader Section */}
-      <div
-        className="relative flex-[1] reader-container bg-white px-4 py-6 overflow-y-auto"
-        style={{ maxHeight: "100vh" }}
-      >
-        {/* Breadcrumb + Title */}
-        <div className="mb-2">
-          <div className="text-xs text-gray-500 mb-1">
-            <Link to="/" className="hover:underline text-[#2196f3] font-medium">Trang chủ</Link>
-            <span> » </span>
-            <Link to="/the-loai" className="hover:underline text-[#2196f3] font-medium">Thể loại</Link>
-            <span> » </span>
-            <Link to={`/truyen/${slug}`} className="hover:underline text-[#2196f3] font-medium">{comicName}</Link>
-            <span> » </span>
-            <span className="font-semibold text-[#2196f3]">
-              Chapter {allChapters[currentChapterIdx]?.chapter_name || chapter}
-            </span>
-            {updatedAt && (
-              <span className="ml-2 text-gray-500 text-xs">
-                [Cập nhật: {new Date(updatedAt).toLocaleString()}]
-              </span>
-            )}
-          </div>
-          <div className="reader-title text-2xl font-bold text-center">{comicName}</div>
-        </div>
-
-        {/* Chapter Navigation */}
-        <div>
-          <ChapterNav
-            slug={slug}
-            allChapters={allChapters}
-            currentChapterIdx={currentChapterIdx}
-            prevIdx={prevIdx}
-            nextIdx={nextIdx}
-            goToChapter={goToChapter}
-            showChapterList={showChapterList}
-            setShowChapterList={setShowChapterList}
-            renderChapterList={renderChapterList}
-            isFollowing={isFollowing}
-            toggleFollow={toggleFollow}
-          />
-        </div>
-
-        {/* Manga Images */}
-        <div className="manga-page flex-1 flex justify-center items-center my-4">
-          <ChapterImages images={images} loading={imgLoading} error={imgError} />
-        </div>
-      </div>
-
-      {/* Sidebar Section */}
+    <div className="min-h-screen bg-white text-gray-800 py-4 font-sans">
+      {/* Sidebar */}
       <aside
-        className="sidebar w-full max-w-[390px] border-l border-gray-200 bg-white flex flex-col gap-6 p-4 overflow-y-auto"
-        style={{ maxHeight: "100vh" }}
+        className={`fixed top-0 left-0 w-64 bg-white text-black shadow transform transition-transform duration-300 z-30 border-r ${
+          showSidebar ? "translate-x-0" : "-translate-x-full"
+        } flex flex-col h-screen`}
       >
-        {/* Reading History and Followed Comics */}
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* Reading History */}
-          <div className="sidebar-section flex-1">
-            <h3 className="section-title text-[#2196f3] font-bold mb-3">Lịch sử đọc</h3>
-            {user && historyList.length > 0 ? (
-              <>
-                {historyList.map((item, idx) => (
-                  <div key={idx} className="history-item mb-4 cursor-pointer">
-                    <Link to={`/truyen/${item.slug}`}>
-                      <img
-                        src={
-                          item.thumb_url?.startsWith("http")
-                            ? item.thumb_url
-                            : `https://img.otruyenapi.com/uploads/comics/${item.thumb_url || "placeholder.jpg"}`
-                        }
-                        alt={item.name || item.slug}
-                        className="w-full h-36 object-cover rounded mb-2"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "https://placehold.co/120x180?text=No+Img";
-                        }}
-                      />
-                      <div className="item-info text-center">
-                        <div className="item-title font-semibold">{item.name || item.slug}</div>
-                        <div className="item-chapter text-xs text-gray-500">Chương {item.chapter}</div>
-                      </div>
-                    </Link>
-                  </div>
-                ))}
-                {hasMoreHistory && (
-                  <div className="text-center text-gray-400 text-xs font-semibold">
-                    <Link to="/Profile" className="hover:underline">Xem thêm</Link>
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="text-xs text-gray-500">Bạn chưa đọc truyện nào.</div>
-            )}
-          </div>
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b">
+          <h2 className="font-semibold">Thông tin</h2>
+          <button
+            onClick={() => setShowSidebar(false)}
+            className="text-gray-500 hover:text-black text-2xl"
+          >
+            ×
+          </button>
+        </div>
 
-          {/* Vertical Divider */}
-          <div className="hidden md:block border-l border-gray-300"></div>
-
-          {/* Followed Comics */}
-          <div className="sidebar-section flex-1">
-            <h3 className="section-title text-[#ffb300] font-bold mb-3">Truyện theo dõi</h3>
-            {user ? (
-              followLoading ? (
-                <div className="text-xs text-gray-500">Đang tải...</div>
-              ) : followError ? (
-                <div className="text-xs text-red-500">{followError}</div>
-              ) : followedComics.length > 0 ? (
-                <>
-                  {followedComics.slice(0, 2).map((item, idx) => (
-                    <div key={idx} className="followed-item mb-4 cursor-pointer">
-                      <Link to={`/truyen/${item.slug}`}>
+        {/* Nội dung scroll */}
+        <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-6 text-sm">
+          {/* Lịch sử đọc */}
+          <div>
+            <h3 className="font-bold mb-3 text-purple-700">Lịch sử đọc</h3>
+            {user && readingHistory?.length > 0 ? (
+              <div className="space-y-2">
+                {[...new Set(readingHistory.map((h) => h.slug))]
+                  .slice(0, 5)
+                  .map((slug) => {
+                    const comic = historyComics[slug];
+                    return (
+                      <Link
+                        key={slug}
+                        to={`/truyen/${slug}`}
+                        onClick={() => setShowSidebar(false)}
+                        className="flex items-center gap-2 hover:bg-purple-50 p-2 rounded"
+                      >
                         <img
                           src={
-                            item.thumb_url?.startsWith("http")
-                              ? item.thumb_url
-                              : `https://img.otruyenapi.com/uploads/comics/${item.thumb_url || "placeholder.jpg"}`
+                            comic?.thumb_url
+                              ? `${cdnDomain}/uploads/comics/${comic.thumb_url}`
+                              : "/default-avatar.png"
                           }
-                          alt={item.name || item.slug}
-                          className="w-full h-36 object-cover rounded mb-2"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "https://placehold.co/120x180?text=No+Img";
-                          }}
+                          alt={comic?.name}
+                          className="w-8 h-12 object-cover rounded border"
                         />
-                        <div className="item-info text-center">
-                          <div className="item-title font-semibold">{item.name}</div>
-                        </div>
+                        <span className="truncate">{comic?.name || slug}</span>
                       </Link>
-                    </div>
-                  ))}
-                  {followedComics.length > 2 && (
-                    <div className="text-center text-gray-400 text-xs font-semibold">
-                      <Link to="/Profile" className="hover:underline">Xem thêm</Link>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="text-xs text-gray-500">Bạn chưa theo dõi truyện nào.</div>
-              )
+                    );
+                  })}
+                {readingHistory.length > 5 && (
+                  <Link
+                    to="/profile"
+                    onClick={() => setShowSidebar(false)}
+                    className="block mt-2 text-xs font-semibold text-center text-purple-600 hover:underline"
+                  >
+                    Xem thêm...
+                  </Link>
+                )}
+              </div>
             ) : (
-              <div className="text-xs text-gray-500">Vui lòng đăng nhập để xem truyện theo dõi.</div>
+              <p className="text-gray-500 italic">Chưa có dữ liệu lưu dấu kỷ niệm.</p>
             )}
           </div>
-        </div>
 
-        {/* Comments Section */}
-        <div className="sidebar-section flex-1 min-h-[200px]">
-          <h3 className="section-title text-[#2196f3] font-bold mb-3">Bình luận</h3>
-          <div className="comments-container">
-            <CommentSection comicSlug={slug} user={user} />
+          {/* Truyện theo dõi */}
+          <div>
+            <h3 className="font-bold mb-3 text-blue-700">Truyện theo dõi</h3>
+            {user ? (
+              followLoading ? (
+                <p className="text-gray-500">Đang tải hơi thở ngọt ngào...</p>
+              ) : followError ? (
+                <p className="text-red-500">{followError}</p>
+              ) : followedComics.length > 0 ? (
+                <div className="space-y-2">
+                  {followedComics.slice(0, 5).map((comic) => (
+                    <Link
+                      key={comic.slug}
+                      to={`/truyen/${comic.slug}`}
+                      onClick={() => setShowSidebar(false)}
+                      className="flex items-center gap-2 hover:bg-blue-50 p-2 rounded"
+                    >
+                      <img
+                        src={comic.thumb_url}
+                        alt={comic.name}
+                        className="w-8 h-12 object-cover rounded border"
+                      />
+                      <div className="truncate">
+                        <div className="font-medium truncate">{comic.name}</div>
+                        <div className="text-xs text-gray-500">
+                          Chapter {comic.chap || "?"}
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                  {followedComics.length > 5 && (
+                    <Link
+                      to="/profile"
+                      onClick={() => setShowSidebar(false)}
+                      className="block mt-2 text-xs font-semibold text-center text-purple-600 hover:underline"
+                    >
+                      Xem thêm...
+                    </Link>
+                  )}
+                </div>
+              ) : (
+                <p className="text-gray-500 italic">Chưa cất giữ bóng hình truyện nào.</p>
+              )
+            ) : (
+              <p className="text-gray-500">Đăng nhập để dệt nên hồi ức.</p>
+            )}
+          </div>
+
+          {/* Đánh giá */}
+          <div>
+            <h3 className="font-bold mb-3">Đánh giá truyện</h3>
+            <RaiTing comicSlug={slug} user={user} />
           </div>
         </div>
       </aside>
+
+      {/* Overlay */}
+      {showSidebar && (
+        <div
+          onClick={() => setShowSidebar(false)}
+          className="fixed inset-0 bg-black bg-opacity-30 z-20"
+        ></div>
+      )}
+
+      {/* Main */}
+      <main className="max-w-4xl mx-auto space-y-6 pb-20">
+        <nav className="text-xs text-gray-500 mb-2 px-2">
+          <Link to="/" className="hover:underline text-blue-500">Trang Chủ</Link>
+          {" / "}
+          <Link to={`/truyen/${slug}`} className="hover:underline text-blue-500">{comicName}</Link>
+          {" / "}
+          <span>Chương {chapter}</span>
+        </nav>
+
+        <div className="bg-white p-4 border border-gray-200 rounded shadow text-sm">
+          <h1 className="text-lg font-semibold mb-2">
+            {comicName} - Chapter {chapter}
+            <span className="text-xs text-gray-500 ml-2">(Cập nhật: {updatedAt || "?"})</span>
+          </h1>
+          <p className="mb-2">
+            Nếu không xem được truyện vui lòng đổi <strong>"SERVER HÌNH"</strong> bên dưới.
+          </p>
+          <div className="flex gap-2 flex-wrap">
+            <button className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded">Server 1</button>
+            <button className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded">Server VIP</button>
+            <button className="px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white rounded">⚠ Báo Lỗi Chương</button>
+          </div>
+        </div>
+
+        <div className="bg-gray-50 rounded-lg shadow p-4 border border-gray-200">
+          <ChapterImages images={images} loading={imgLoading} error={imgError} />
+        </div>
+
+        <div className="bg-gray-50 text-gray-800 rounded-lg shadow p-4 border border-gray-200">
+          <h3 className="font-medium mb-2">Bình luận</h3>
+          <CommentSection comicSlug={slug} user={user} />
+        </div>
+      </main>
+
+      {/* ChapterNav */}
+      <ChapterNav
+        allChapters={allChapters}
+        currentChapterIdx={currentChapterIdx}
+        prevIdx={prevIdx}
+        nextIdx={nextIdx}
+        goToChapter={goToChapter}
+        showChapterList={showChapterList}
+        setShowChapterList={setShowChapterList}
+        renderChapterList={() => (
+          <ChapterList
+            ref={chapterListRef}
+            allChapters={allChapters}
+            currentChapterIdx={currentChapterIdx}
+            goToChapter={goToChapter}
+            isChapterRead={(s, c) => false}
+            slug={slug}
+            user={user}
+          />
+        )}
+        isFollowing={isFollowing}
+        toggleFollow={toggleFollow}
+        onToggleSidebar={() => setShowSidebar(true)}
+        className="!fixed !bottom-0 !left-0 !w-full"
+      />
     </div>
   );
 };
