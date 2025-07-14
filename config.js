@@ -4,4 +4,4 @@ export const API_BASE_URL =
     : "https://backend-production-3828.up.railway.app";
 
 // Sử dụng:
-fetch(`${API_BASE_URL}/home`);
+fetch(`${API_BASE_URL}/api/home`);
