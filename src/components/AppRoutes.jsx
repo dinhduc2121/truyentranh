@@ -12,6 +12,7 @@ import CategoryPage from "./CategoryPage";
 import ProfileContainer from "./Profile/ProfileContainer";
 import AdminUserManager from "../admin/AdminDashboard";
 import DepositPage from "../components/Money/DepositPage";
+import { API_BASE_URL } from "../../config";
 
 // Trang demo
 const Hot = () => <div className="p-4">Truyện Hot (đang phát triển)</div>;

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useSearchParams } from "react-router-dom";
+import { API_BASE_URL } from "../../config";
 
 const sortOptions = [
   { label: "Ngày cập nhật", value: "updated" },
