@@ -203,12 +203,14 @@ const Read = ({ user }) => {
           {" / "}
           <Link to={`/truyen/${slug}`} className="hover:underline text-blue-500">{comicName}</Link>
           {" / "}
+          
           <span>Chương {chapter}</span>
         </nav>
 
         <div className="bg-white p-4 border border-gray-200 rounded shadow text-sm">
           <h1 className="text-lg font-semibold mb-2">
-            {comicName} - Chapter {chapter}
+            <Link to={`/truyen/${slug}`} className="hover:underline text-blue-500">{comicName} </Link>
+             - Chapter {chapter}
             <span className="text-xs text-gray-500 ml-2">(Cập nhật: {updatedAt || "?"})</span>
           </h1>
           <p className="mb-2">

@@ -205,6 +205,7 @@ const Detail = ({ user }) => {
             links={[
               { label: "Trang chủ", to: "/" },
               { label: "Thể loại", to: "/the-loai" },
+              {},
             ]}
             current={comic?.name || ""}
           />
@@ -232,14 +233,7 @@ const Detail = ({ user }) => {
             historyComics={historyComics}
           />
           <TopRanking
-            comics={[
-              {
-                name: "Bách Luyện Thành Thần",
-                chap: "1295",
-                views: "41M",
-                thumb_url: "bach-luyen.jpg",
-              },
-            ]}
+            
           />
         </div>
       </div>

@@ -10,7 +10,7 @@ const ReadingHistory = ({ user, readingHistory, historyComics }) => (
       ) : (
         <ul className="text-xs text-gray-800 space-y-2">
           {[...new Set(readingHistory.map((h) => h.slug))]
-            .slice(0, 10)
+            .slice(0, 5)
             .map((slug, idx) => {
               const comic = historyComics[slug];
               return (
