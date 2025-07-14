@@ -207,7 +207,6 @@ const CategoryPage = () => {
           </div>
         </div>
       </div>
-      {/* Phân trang dưới cùng, luôn hiển thị khi có nhiều trang */}
       {totalPages > 1 && !loading && !error && (
         <div className="flex justify-center items-center gap-2 mt-8 flex-wrap">
           <button
@@ -217,10 +216,9 @@ const CategoryPage = () => {
           >
             &lt;
           </button>
-          {/* Hiển thị tối đa 2 trang đầu, 2 trang cuối, 2 trang quanh trang hiện tại */}
           {(() => {
-            const maxShow = 2; // số trang đầu/cuối luôn hiển thị
-            const range = 1;   // số trang quanh trang hiện tại
+            const maxShow = 2; 
+            const range = 1; 
             let pages = [];
             for (let i = 1; i <= totalPages; i++) {
               if (
@@ -236,7 +234,6 @@ const CategoryPage = () => {
                 pages.push("...");
               }
             }
-            // Loại bỏ dấu ... liên tiếp
             return pages.reduce((arr, p, idx) => {
               if (p === "..." && arr[arr.length - 1] === "...") return arr;
               arr.push(p);

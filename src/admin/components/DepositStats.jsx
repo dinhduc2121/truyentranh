@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from "../../../config";
 
 const DepositStats = () => {
   const [deposits, setDeposits] = useState([]);
@@ -31,7 +32,7 @@ const DepositStats = () => {
     try {
       setProcessingId(id);
       const token = JSON.parse(localStorage.getItem('user'))?.token;
-      await axios.post(`http://localhost:3001/api/deposit/${action}/${id}`, {}, {
+      await axios.post(`${API_BASE_URL}/api/deposit/${action}/${id}`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       await fetchDeposits();

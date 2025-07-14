@@ -7,6 +7,7 @@ import AccountsManager from "./components/AccountsManager";
 import ComicsManager from "./components/ComicsManager";
 import MessagesManager from "./components/MessagesManager";
 import DepositStats from "./components/DepositStats";
+import { API_BASE_URL } from "../../config";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("accounts");
@@ -24,7 +25,6 @@ const AdminDashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const API_BASE_URL = "http://localhost:3001";
 
   const getToken = () => {
     const storedUser = localStorage.getItem("user");

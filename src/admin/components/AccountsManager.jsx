@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../../../config";
 
 const AccountsManager = ({ handleRoleChange }) => {
   const [users, setUsers] = useState([]);
@@ -12,7 +13,7 @@ const AccountsManager = ({ handleRoleChange }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get("http://localhost:3001/api/user/admin/users", {
+        const res = await axios.get('${API_BASE_URL}/api/user/admin/users', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUsers(res.data.users || []);
@@ -36,7 +37,7 @@ const AccountsManager = ({ handleRoleChange }) => {
     if (!depositHistory[userId]) {
       try {
         const res = await axios.get(
-          `http://localhost:3001/api/deposit/user/${userId}`,
+          `${API_BASE_URL}/api/deposit/user/${userId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setDepositHistory((prev) => ({

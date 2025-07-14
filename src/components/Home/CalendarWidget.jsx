@@ -20,7 +20,7 @@ const CalendarWidget = () => {
       const savedQuote = localStorage.getItem("quote");
       setQuote(savedQuote);
     } else {
-      fetch("http://localhost:3001/api/quote")
+      fetch(`${API_BASE_URL}/api/quote`)
         .then((res) => res.json())
         .then((data) => {
           setQuote(data.quote);

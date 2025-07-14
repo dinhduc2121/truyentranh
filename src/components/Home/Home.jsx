@@ -6,6 +6,7 @@ import { useFollowedComics } from "../Read/hooks/useFollowedComics";
 import HomeComments from "./HomeComments";
 import "../../../src/index.css";
 import CalendarWidget from "./CalendarWidget";
+import { API_BASE_URL } from "../../../config";
 
 const Home = ({ user }) => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -51,7 +52,7 @@ const Home = ({ user }) => {
 
   useEffect(() => {
     if (!user?.token) return;
-    fetch("http://localhost:3001/api/user/history", {
+    fetch(`${API_BASE_URL}/api/user/history`, {
       headers: { Authorization: `Bearer ${user.token}` },
     })
       .then((res) => res.json())
@@ -81,7 +82,7 @@ const Home = ({ user }) => {
   }, [user, readingHistory]);
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/comments")
+    fetch(`${API_BASE_URL}/api/comments`)
       .then((res) => res.json())
       .then((data) => {
         setHomeComments(
@@ -93,9 +94,8 @@ const Home = ({ user }) => {
         setError("Không thể tải bình luận");
       });
   }, []);
-
   const handleAddComment = async (content) => {
-    const res = await fetch("http://localhost:3001/api/comments", {
+    const res = await fetch(`${API_BASE_URL}/api/comments`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
