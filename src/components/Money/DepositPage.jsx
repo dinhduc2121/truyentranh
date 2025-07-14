@@ -39,21 +39,28 @@ export default function DepositPage() {
   }, []);
 
   const fetchBalance = async () => {
-    try {
-      const userData = JSON.parse(localStorage.getItem("user"));
-      if (!userData?.token) {
-        alert("Bạn chưa đăng nhập!");
-        return;
-      }
-
-      const data = await getCurrentUser(userData.token);
-      setCurrentBalance(data.user.linhThach || 0);
-      setUsername(data.user.username || "Người đọc");
-    } catch (error) {
-      console.error(error);
-      alert("Không thể lấy thông tin tài khoản. Vui lòng đăng nhập lại.");
+  try {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    if (!userData?.token) {
+      alert("Bạn chưa đăng nhập!");
+      return;
     }
-  };
+
+    const res = await fetch(`${API_BASE_URL}/api/user/me`, {
+      headers: {
+        Authorization: `Bearer ${userData.token}`,
+      },
+    });
+
+    const data = await res.json();
+    setCurrentBalance(data.user.linhThach || 0);
+    setUsername(data.user.username || "Người đọc");
+  } catch (error) {
+    console.error(error);
+    alert("Không thể lấy thông tin tài khoản. Vui lòng đăng nhập lại.");
+  }
+};
+
 
   const handleSelectPackage = (pkg) => {
     setSelectedAmount(pkg.amount);
@@ -113,10 +120,9 @@ export default function DepositPage() {
           console.error(error);
           alert(error.message);
         }
-        return; // Dừng không chạy phần dưới
+        return;
       }
 
-      // Các phương thức khác
       let backendMethod = "bank";
       if (selectedMethod.includes("Momo")) backendMethod = "momo";
       else if (selectedMethod.includes("ZaloPay")) backendMethod = "zalopay";
