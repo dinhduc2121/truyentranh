@@ -9,7 +9,7 @@ export async function createCardDeposit({
   token,
 }) {
   const res = await fetch(
-    `${import.meta.env.VITE_API_BASE_URL}/card-deposits/request`,
+    `${import.meta.env.VITE_API_BASE_URL}/api/card-deposits/request`,
     {
       method: "POST",
       headers: {
