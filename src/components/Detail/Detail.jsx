@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Breadcrumbs from "./Breadcrumbs";
 import ComicInfo from "./ComicInfo";
 import ChapterList from "./ChapterList";
@@ -10,6 +10,8 @@ import { API_BASE_URL } from "../../../config";
 
 const Detail = ({ user }) => {
   const { slug } = useParams();
+  const navigate = useNavigate();
+
   const [comic, setComic] = useState(null);
   const [comicStats, setComicStats] = useState({ views: 0, followers: 0, rating: 0 });
   const [loading, setLoading] = useState(true);
@@ -20,7 +22,16 @@ const Detail = ({ user }) => {
   const [followLoading, setFollowLoading] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
 
+  // Nếu chưa đăng nhập, chuyển login ngay khi mở trang
   useEffect(() => {
+    if (!user?.token) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
+
+  useEffect(() => {
+    if (!user?.token) return; // Chỉ chạy khi đã login
+
     let cancelled = false;
 
     const fetchData = async () => {
@@ -42,7 +53,7 @@ const Detail = ({ user }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+            Authorization: `Bearer ${user.token}`,
           },
           body: JSON.stringify({ name: loadedComic?.name || slug }),
         });
@@ -140,6 +151,10 @@ const Detail = ({ user }) => {
 
   const handleClickChapter = async (chapterName) => {
     if (viewLoading || !comic?.name) return;
+    if (!user?.token) {
+      navigate("/login");
+      return;
+    }
     setViewLoading(true);
     try {
       await fetch(`${API_BASE_URL}/api/comic/view/${slug}`, {
@@ -193,6 +208,8 @@ const Detail = ({ user }) => {
     return currentNum > 0 && savedNum > 0 && currentNum <= savedNum;
   };
 
+  if (!user?.token) return null; // Không render gì khi chưa login
+
   if (loading) return <div className="p-4">Đang tải chi tiết truyện...</div>;
   if (error) return <div className="p-4 text-red-500">{error}</div>;
   if (!comic) return <div className="p-4">Không tìm thấy truyện.</div>;
@@ -232,16 +249,11 @@ const Detail = ({ user }) => {
             readingHistory={readingHistory}
             historyComics={historyComics}
           />
-          <TopRanking
-            
-          />
+          <TopRanking />
         </div>
       </div>
       <div className="w-full">
-        <CommentSection
-          comicSlug={slug}
-          user={user}
-        />
+        <CommentSection comicSlug={slug} user={user} />
       </div>
     </div>
   );
