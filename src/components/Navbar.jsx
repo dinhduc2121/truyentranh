@@ -125,16 +125,39 @@ const Navbar = ({ user, onLogout }) => {
             {/* User */}
             <div className="relative" ref={accountMenuRef}>
               {user ? (
-                <Link
-                  to="/profile"
-                  className="text-white text-xs sm:text-sm font-semibold hover:underline"
-                >
-                  Thông tin tài khoản
-                </Link>
+                <>
+                  <button
+                    onClick={() => setAccountMenuOpen((prev) => !prev)}
+                    className="text-white text-xs sm:text-sm font-semibold"
+                  >
+                    Thông tin tài khoản
+                  </button>
+                  {accountMenuOpen && (
+                    <div className="absolute right-0 mt-2 bg-white border border-gray-200 rounded shadow-lg w-40 z-50">
+                      <Link
+                        to="/profile"
+                        className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setAccountMenuOpen(false)}
+                      >
+                        Xem hồ sơ
+                      </Link>
+                      <button
+                        onClick={() => {
+                          onLogout();
+                          setAccountMenuOpen(false);
+                          window.location.href = "/";
+                        }}
+                        className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-gray-100"
+                      >
+                        Đăng xuất
+                      </button>
+                    </div>
+                  )}
+                </>
               ) : (
                 <>
                   <button
-                    onClick={() => setAccountMenuOpen(prev => !prev)}
+                    onClick={() => setAccountMenuOpen((prev) => !prev)}
                     className="text-white text-xs sm:text-sm font-semibold"
                   >
                     Tài khoản
@@ -160,6 +183,7 @@ const Navbar = ({ user, onLogout }) => {
                 </>
               )}
             </div>
+
           </div>
           {/* Mobile: Hamburger */}
           <button
