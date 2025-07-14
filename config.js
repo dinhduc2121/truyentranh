@@ -1,4 +1,5 @@
-export const API_BASE_URL =
+export const API_BASE_URL = 
   import.meta.env.MODE === "development"
-    ? `${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}${import.meta.env.VITE_API_PATH}`
+    ? "http://localhost:3001"
+    
     : "https://backend-production-3828.up.railway.app";
