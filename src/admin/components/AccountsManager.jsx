@@ -1,10 +1,55 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-const AccountsManager = ({ users, handleRoleChange }) => {
+const AccountsManager = ({ handleRoleChange }) => {
+  const [users, setUsers] = useState([]);
   const [expandedUserId, setExpandedUserId] = useState(null);
+  const [depositHistory, setDepositHistory] = useState({});
+  const [loading, setLoading] = useState(true);
 
-  const toggleExpand = (userId) => {
-    setExpandedUserId(expandedUserId === userId ? null : userId);
+  const token = JSON.parse(localStorage.getItem("user"))?.token;
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await axios.get("http://localhost:3001/api/user/admin/users", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUsers(res.data.users || []);
+      } catch (err) {
+        console.error("Lỗi khi tải danh sách người dùng:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  const toggleExpand = async (userId) => {
+    if (expandedUserId === userId) {
+      setExpandedUserId(null);
+      return;
+    }
+
+    // Nếu chưa load depositHistory, gọi API
+    if (!depositHistory[userId]) {
+      try {
+        const res = await axios.get(
+          `http://localhost:3001/api/deposit/user/${userId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setDepositHistory((prev) => ({
+          ...prev,
+          [userId]: res.data.deposits || [],
+        }));
+      } catch (err) {
+        console.error("Lỗi khi tải lịch sử nạp:", err);
+        setDepositHistory((prev) => ({ ...prev, [userId]: [] }));
+      }
+    }
+
+    setExpandedUserId(userId);
   };
 
   return (
@@ -12,10 +57,11 @@ const AccountsManager = ({ users, handleRoleChange }) => {
       <h2 className="text-2xl font-bold mb-4 text-[#2196f3]">
         Quản lý tài khoản
       </h2>
-      {users.length === 0 && (
+      {loading ? (
+        <p className="text-gray-500">Đang tải dữ liệu...</p>
+      ) : users.length === 0 ? (
         <p className="text-gray-500 text-lg">Không có tài khoản nào.</p>
-      )}
-      {users.length > 0 && (
+      ) : (
         <div className="bg-white rounded-lg shadow-md overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
@@ -28,10 +74,10 @@ const AccountsManager = ({ users, handleRoleChange }) => {
             </thead>
             <tbody>
               {users.map((user) => (
-                <React.Fragment key={user._id}>
+                <React.Fragment key={user.id}>
                   <tr
                     className="hover:bg-blue-50 cursor-pointer transition"
-                    onClick={() => toggleExpand(user._id)}
+                    onClick={() => toggleExpand(user.id)}
                   >
                     <td className="border p-3 font-medium text-gray-800">
                       {user.username}
@@ -46,7 +92,7 @@ const AccountsManager = ({ users, handleRoleChange }) => {
                       <select
                         value={user.role}
                         onChange={(e) =>
-                          handleRoleChange(user._id, e.target.value)
+                          handleRoleChange(user.id, e.target.value)
                         }
                         className="border p-1 rounded focus:ring-2 focus:ring-[#ffb300] bg-white"
                       >
@@ -55,126 +101,85 @@ const AccountsManager = ({ users, handleRoleChange }) => {
                       </select>
                     </td>
                   </tr>
-                  {expandedUserId === user._id && (
-                    <tr>
+                  {expandedUserId === user.id && (
+                    <tr key={`${user.id}-expanded`}>
                       <td colSpan="4" className="border-t p-4 bg-gray-50">
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                          {/* Avatar */}
-                          <div className="flex flex-col items-center space-y-2">
-                            <img
-                              src={
-                                user.avatar ||
-                                "https://placehold.co/100x100?text=Avatar"
-                              }
-                              alt={`${user.username} avatar`}
-                              className="w-24 h-24 rounded-full object-cover border-2 border-blue-500"
-                            />
-                            <div className="text-center">
-                              <p className="font-semibold text-gray-800">
-                                {user.username}
-                              </p>
-                              <p className="text-gray-500">
-                                {user.email || "Không có email"}
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* Lịch sử đọc */}
-                          <div>
-                            <h4 className="font-semibold text-gray-700 mb-2">
-                              Lịch sử đọc
-                            </h4>
-                            {user.readingHistory?.length > 0 ? (
-                              <ul className="space-y-1 text-sm text-gray-600 list-disc pl-4">
-                                {user.readingHistory.slice(0, 5).map((h, i) => (
-                                  <li key={i}>
-                                    <span className="font-medium">{h.slug}</span>
-                                    : Chương {h.chapter}
-                                  </li>
-                                ))}
-                                {user.readingHistory.length > 5 && (
-                                  <li className="text-gray-400 italic">...</li>
-                                )}
-                              </ul>
-                            ) : (
-                              <p className="text-gray-500 text-sm">
-                                Không có dữ liệu.
-                              </p>
-                            )}
-                          </div>
-
-                          {/* Truyện theo dõi */}
-                          <div>
-                            <h4 className="font-semibold text-gray-700 mb-2">
-                              Truyện theo dõi
-                            </h4>
-                            {user.followedComics?.length > 0 ? (
-                              <ul className="space-y-1 text-sm text-gray-600 list-disc pl-4">
-                                {user.followedComics.slice(0, 5).map((c, i) => (
-                                  <li key={i}>{c}</li>
-                                ))}
-                                {user.followedComics.length > 5 && (
-                                  <li className="text-gray-400 italic">...</li>
-                                )}
-                              </ul>
-                            ) : (
-                              <p className="text-gray-500 text-sm">
-                                Không có dữ liệu.
-                              </p>
-                            )}
-                          </div>
-
-                          {/* Lịch sử tiêu và nạp linh thạch */}
-                          <div>
-                            <h4 className="font-semibold text-gray-700 mb-2">
-                              Lịch sử tiêu và nạp linh thạch
-                            </h4>
-                            {user.crystalHistory?.length > 0 ? (
-                              <div className="overflow-x-auto">
-                                <table className="min-w-full border text-sm">
-                                  <thead>
-                                    <tr className="bg-blue-100">
-                                      <th className="border p-2">Ngày</th>
-                                      <th className="border p-2">Mô tả</th>
-                                      <th className="border p-2">Số lượng</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {user.crystalHistory.slice(0, 5).map((item, i) => (
-                                      <tr key={i}>
-                                        <td className="border p-2">{item.date}</td>
-                                        <td className="border p-2">{item.description}</td>
-                                        <td
-                                          className={`border p-2 ${
-                                            item.amount < 0
-                                              ? "text-red-600"
-                                              : "text-green-600"
-                                          }`}
-                                        >
-                                          {item.amount > 0 ? "+" : ""}
-                                          {item.amount} LT
-                                        </td>
-                                      </tr>
-                                    ))}
-                                    {user.crystalHistory.length > 5 && (
-                                      <tr>
-                                        <td
-                                          colSpan="3"
-                                          className="text-center text-gray-400 italic"
-                                        >
-                                          ...
-                                        </td>
-                                      </tr>
-                                    )}
-                                  </tbody>
-                                </table>
+                        {/* Thông tin User */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                          {Object.entries(user).map(([key, value]) => (
+                            <div key={key} className="flex border-b py-1">
+                              <div className="w-40 font-semibold text-gray-700 capitalize">
+                                {key}
                               </div>
-                            ) : (
-                              <p className="text-gray-500 text-sm">
-                                Không có dữ liệu.
-                              </p>
-                            )}
-                          </div>
+                              <div
+                                className={`flex-1 text-gray-800 truncate ${
+                                  key === "linhThach"
+                                    ? "text-green-600 font-bold"
+                                    : ""
+                                }`}
+                                title={String(value)}
+                              >
+                                {value === null || value === undefined || value === ""
+                                  ? "Không có dữ liệu"
+                                  : key === "createdAt" || key === "updatedAt"
+                                  ? new Date(value).toLocaleString()
+                                  : String(value)}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        {/* Lịch sử nạp */}
+                        <div>
+                          <h4 className="font-semibold text-gray-700 mb-2">
+                            Lịch sử nạp linh thạch
+                          </h4>
+                          {depositHistory[user.id]?.length > 0 ? (
+                            <div className="overflow-x-auto">
+                              <table className="min-w-full border text-sm">
+                                <thead>
+                                  <tr className="bg-blue-100">
+                                    <th className="border p-2">Ngày</th>
+                                    <th className="border p-2">Số lượng LT</th>
+                                    <th className="border p-2">Giá (VNĐ)</th>
+                                    <th className="border p-2">Phương thức</th>
+                                    <th className="border p-2">Trạng thái</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {depositHistory[user.id].map((d) => (
+                                    <tr key={d.id}>
+                                      <td className="border p-2">
+                                        {new Date(d.createdAt).toLocaleString()}
+                                      </td>
+                                      <td className="border p-2">{d.amount}</td>
+                                      <td className="border p-2">{d.price}</td>
+                                      <td className="border p-2">{d.method}</td>
+                                      <td
+                                        className={`border p-2 ${
+                                          d.status === "approved"
+                                            ? "text-green-600"
+                                            : d.status === "rejected"
+                                            ? "text-red-600"
+                                            : "text-yellow-600"
+                                        }`}
+                                      >
+                                        {d.status === "approved"
+                                          ? "Đã duyệt"
+                                          : d.status === "rejected"
+                                          ? "Đã từ chối"
+                                          : "Chờ duyệt"}
+                                      </td>
+
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          ) : (
+                            <p className="text-gray-500 text-sm">
+                              Không có giao dịch nạp.
+                            </p>
+                          )}
                         </div>
                       </td>
                     </tr>

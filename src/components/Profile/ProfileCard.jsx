@@ -128,9 +128,9 @@ const ProfileCard = ({ profile, email, setEmail, crystal, tuVi, role }) => {
                 className="ml-1 w-6 h-6"
               />
             </span>
-            <button className="ml-4 px-3 py-1 bg-purple-500 text-white rounded-lg hover:bg-purple-600">
-              Nạp thêm
-            </button>
+              <button onClick={() => navigate("/deposit")}>
+                    Nạp thêm
+                  </button>
           </div>
 
           {/* Tu vi */}

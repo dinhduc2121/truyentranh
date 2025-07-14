@@ -11,6 +11,7 @@ import ResetPassword from "./Auth/ResetPassword";
 import CategoryPage from "./CategoryPage";
 import ProfileContainer from "./Profile/ProfileContainer";
 import AdminUserManager from "../admin/AdminDashboard";
+import DepositPage from "../components/Money/DepositPage";
 
 // Trang demo
 const Hot = () => <div className="p-4">Truyện Hot (đang phát triển)</div>;
@@ -29,6 +30,7 @@ const AppRoutes = ({
     <Route path="/register" element={<Register />} />
     <Route path="/forgot-password" element={<ForgotPassword />} />
     <Route path="/reset-password" element={<ResetPassword />} />
+    <Route path="/deposit" element={<DepositPage />} />
     <Route
       path="/"
       element={

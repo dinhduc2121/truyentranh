@@ -18,15 +18,18 @@ const MessagesManager = ({ comments }) => (
             </tr>
           </thead>
           <tbody>
-            {comments.map(comment => (
-              <tr key={comment._id} className="hover:bg-gray-50">
-                <td className="border p-3">{comment.username}</td>
+            {comments.map((comment) => (
+              <tr key={comment.id} className="hover:bg-gray-50">
+                <td className="border p-3">{comment.User?.username || comment.username}</td>
                 <td className="border p-3">{comment.comicSlug}</td>
                 <td className="border p-3">{comment.content}</td>
-                <td className="border p-3">{new Date(comment.createdAt).toLocaleString()}</td>
+                <td className="border p-3">
+                  {new Date(comment.createdAt).toLocaleString()}
+                </td>
               </tr>
             ))}
           </tbody>
+
         </table>
       </div>
     )}
