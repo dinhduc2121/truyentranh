@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import Pagination from "./Pagination";
+import { API_BASE_URL } from "../../../config";
 
 const NewComics = ({ selectedCategory }) => {
   const [comics, setComics] = useState([]);

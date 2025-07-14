@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from "../../../../config";
 
 export const useChapterData = (slug, chapterParam) => {
   const [comicName, setComicName] = useState("");

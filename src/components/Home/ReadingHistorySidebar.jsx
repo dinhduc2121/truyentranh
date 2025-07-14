@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useReadingHistory } from "../Read/hooks/useReadingHistory";
+import { API_BASE_URL } from "../../../config";
 
 const ReadingHistorySidebar = ({ user }) => {
   const { readingHistory } = useReadingHistory({

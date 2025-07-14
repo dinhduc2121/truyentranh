@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../../../src/index.css";
 import Pagination from "./Pagination";
+import { API_BASE_URL } from "../../../config";
 
 const rainbowGradient = {
   background: "linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet)",

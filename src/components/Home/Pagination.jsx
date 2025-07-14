@@ -1,4 +1,5 @@
 import React from "react";
+import { API_BASE_URL } from "../../../config";
 
 const Pagination = ({ page, totalPages, onPageChange }) => {
   if (totalPages <= 1) return null;

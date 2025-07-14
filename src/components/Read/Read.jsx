@@ -9,6 +9,7 @@ import { useFollowStatus } from "./hooks/useFollowStatus";
 import { useChapterData } from "./hooks/useChapterData";
 import { useReadingHistory } from "./hooks/useReadingHistory";
 import { useFollowedComics } from "./hooks/useFollowedComics";
+import { API_BASE_URL } from "../../../config";
 
 const Read = ({ user }) => {
   const { slug, chapter } = useParams();

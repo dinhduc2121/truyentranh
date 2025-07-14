@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { API_BASE_URL } from "../../../config";
 
 const ReadingHistory = ({ user, readingHistory, historyComics }) => (
   <div className="bg-white border rounded shadow p-4 mb-6">

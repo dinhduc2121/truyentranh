@@ -1,4 +1,5 @@
 import React from "react";
+import { API_BASE_URL } from "../../../config";
 
 const TabNavigation = ({ tab, setTab }) => (
   <div className="flex gap-2 mb-6">

@@ -1,4 +1,5 @@
 import React, { forwardRef } from "react";
+import { API_BASE_URL } from "../../../config";
 
 const ChapterList = forwardRef(
   ({ allChapters, currentChapterIdx, goToChapter, isChapterRead, slug, user }, ref) => {

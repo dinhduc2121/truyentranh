@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { createDeposit } from "../Money/api/deposit";
 import { getCurrentUser } from "../Money/api/user";
 import { createCardDeposit } from "../Money/api/cardDeposit";
+import { API_BASE_URL } from "../../../config";
 
 export default function DepositPage() {
   const [selectedAmount, setSelectedAmount] = useState(0);

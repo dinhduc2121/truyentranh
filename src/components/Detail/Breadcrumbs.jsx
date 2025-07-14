@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { API_BASE_URL } from "../../../config";
 
 const Breadcrumbs = ({ links, current }) => (
   <div className="text-xs text-gray-500 mb-2">

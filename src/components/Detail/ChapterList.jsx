@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { API_BASE_URL } from "../../../config";
 
 const ChapterList = ({ chapters, slug, user, readingHistory, handleClickChapter, isChapterRead }) => {
   const [showAll, setShowAll] = useState(false);

@@ -1,4 +1,5 @@
 import React from "react";
+import { API_BASE_URL } from "../../../config";
 
 const ProfileHeader = ({ onLogout }) => (
   <div className="flex justify-between items-center mb-8">
