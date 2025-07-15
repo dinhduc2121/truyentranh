@@ -3,7 +3,6 @@ import { Link, useSearchParams } from "react-router-dom";
 import Pagination from "./Pagination";
 import TopRanking from "./TopRanking";
 import { useFollowedComics } from "../Read/hooks/useFollowedComics";
-import HomeComments from "./HomeComments";
 import "../../../src/index.css";
 import CalendarWidget from "./CalendarWidget";
 import { API_BASE_URL } from "../../../config";
@@ -80,38 +79,6 @@ const Home = ({ user }) => {
       setHistoryComics(obj);
     });
   }, [user, readingHistory]);
-
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/api/comments`)
-      .then((res) => res.json())
-      .then((data) => {
-        setHomeComments(
-          data.comments.filter((c) => c.comicSlug === "homepage")
-        );
-      })
-      .catch((err) => {
-        console.error("Lỗi khi tải bình luận:", err);
-        setError("Không thể tải bình luận");
-      });
-  }, []);
-  const handleAddComment = async (content) => {
-    const res = await fetch(`${API_BASE_URL}/api/comments`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user?.token}`,
-      },
-      body: JSON.stringify({
-        comicSlug: "homepage",
-        content,
-      }),
-    });
-
-    if (!res.ok) throw new Error("Gửi bình luận thất bại");
-    const data = await res.json();
-    setHomeComments((prev) => [data.comment, ...prev]);
-    return data.comment;
-  };
 
   const goToPage = (p) => setSearchParams({ page: p });
 
