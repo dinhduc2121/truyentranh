@@ -13,7 +13,8 @@ const AccountsManager = ({ handleRoleChange }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get('${API_BASE_URL}/api/user/admin/users', {
+        
+        const res = await axios.get(`${API_BASE_URL}/api/user/admin/users`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUsers(res.data.users || []);

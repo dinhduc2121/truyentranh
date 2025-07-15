@@ -313,16 +313,7 @@ const Home = ({ user }) => {
           </div>
         </div>
         {/* Bình luận trang chủ */}
-            <section className="mb-12 bg-white rounded-xl shadow-lg p-6">
-              <h2 className="text-2xl font-bold mb-6 text-purple-700 border-b-2 border-pink-200 pb-2">
-                Bình luận trang chủ
-              </h2>
-              <HomeComments
-                comments={homeComments}
-                onAddComment={handleAddComment}
-                user={user}
-              />
-            </section>
+\
       </div>
     </div>
   );
